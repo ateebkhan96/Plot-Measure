@@ -274,133 +274,135 @@
         }
 
         function drawPlot(side1, side2, side3, side4, isPreview) {
-            const svg = document.getElementById('plotVisualization');
-            const maxDimension = Math.max(side1, side2, side3, side4);
-            const scale = 300 / maxDimension;
+    const svg = document.getElementById('plotVisualization');
+    const maxDimension = Math.max(side1, side2, side3, side4);
+    const scale = 300 / maxDimension;
 
-            svg.innerHTML = '';
+    svg.innerHTML = '';
 
-            // Calculate centered position
-            const startX = 100;
-            const startY = 50;
+    // Calculate centered position
+    const startX = 100;
+    const startY = 50;
 
-            // Draw plot as a quadrilateral
-            const scaledSide1 = side1 * scale;
-            const scaledSide2 = side2 * scale;
-            const scaledSide3 = side3 * scale;
-            const scaledSide4 = side4 * scale;
+    // Draw plot as a quadrilateral
+    const scaledSide1 = side1 * scale;
+    const scaledSide2 = side2 * scale;
+    const scaledSide3 = side3 * scale;
+    const scaledSide4 = side4 * scale;
 
-            // Create path for the quadrilateral
-            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            path.setAttribute("d", `
-                M ${startX},${startY} 
-                h ${scaledSide1} 
-                v ${scaledSide2} 
-                h ${-scaledSide3} 
-                Z
-            `);
-            path.setAttribute("fill", "#66cc66"); // Green shading
-            path.setAttribute("stroke", "#2196F3");
-            path.setAttribute("stroke-width", "2");
-            svg.appendChild(path);
+    // Create path for the quadrilateral
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", `
+        M ${startX},${startY}
+        h ${scaledSide1}
+        v ${scaledSide2}
+        h ${-scaledSide3}
+        Z
+    `);
+    path.setAttribute("fill", "#66cc66"); // Green shading
+    path.setAttribute("stroke", "#2196F3");
+    path.setAttribute("stroke-width", "2");
+    svg.appendChild(path);
 
-            // Draw individual sides with class for highlighting
-            const sides = [
-                {x1: startX, y1: startY, x2: startX + scaledSide1, y2: startY}, // Top
-                {x1: startX + scaledSide1, y1: startY, x2: startX + scaledSide1, y2: startY + scaledSide2}, // Right
-                {x1: startX + scaledSide1, y1: startY + scaledSide2, x2: startX, y2: startY + scaledSide2}, // Bottom
-                {x1: startX, y1: startY + scaledSide2, x2: startX, y2: startY} // Left
-            ];
+    // Draw individual sides with class for highlighting
+    const sides = [
+        {x1: startX, y1: startY, x2: startX + scaledSide1, y2: startY}, // Top
+        {x1: startX + scaledSide1, y1: startY, x2: startX + scaledSide1, y2: startY + scaledSide2}, // Right
+        {x1: startX + scaledSide1, y1: startY + scaledSide2, x2: startX, y2: startY + scaledSide2}, // Bottom
+        {x1: startX, y1: startY + scaledSide2, x2: startX, y2: startY} // Left
+    ];
 
-            sides.forEach((side, index) => {
-                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                line.setAttribute("x1", side.x1);
-                line.setAttribute("y1", side.y1);
-                line.setAttribute("x2", side.x2);
-                line.setAttribute("y2", side.y2);
-                line.setAttribute("stroke", "#2196F3");
-                line.setAttribute("stroke-width", "2");
-                line.setAttribute("class", "plot-side");
-                svg.appendChild(line);
-            });
+    sides.forEach((side, index) => {
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", side.x1);
+        line.setAttribute("y1", side.y1);
+        line.setAttribute("x2", side.x2);
+        line.setAttribute("y2", side.y2);
+        line.setAttribute("stroke", "#2196F3");
+        line.setAttribute("stroke-width", "2");
+        line.setAttribute("class", "plot-side");
+        svg.appendChild(line);
+    });
 
-            // Add crosshatching (small diagonal cross lines)
-            const crossLineSpacing = 10; // The distance between each line for crosshatching
-            for (let x = startX; x < startX + scaledSide1; x += crossLineSpacing) {
-                for (let y = startY; y < startY + scaledSide2; y += crossLineSpacing) {
-                    const line1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    line1.setAttribute("x1", x);
-                    line1.setAttribute("y1", y);
-                    line1.setAttribute("x2", x + crossLineSpacing);
-                    line1.setAttribute("y2", y + crossLineSpacing);
-                    line1.setAttribute("stroke", "#4CAF50"); // Green cross lines
-                    line1.setAttribute("stroke-width", "1");
-                    svg.appendChild(line1);
+    // Add crosshatching (small diagonal cross lines)
+    const crossLineSpacing = 10; // The distance between each line for crosshatching
+    for (let x = startX; x < startX + scaledSide1; x += crossLineSpacing) {
+        for (let y = startY; y < startY + scaledSide2; y += crossLineSpacing) {
+            const line1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line1.setAttribute("x1", x);
+            line1.setAttribute("y1", y);
+            line1.setAttribute("x2", x + crossLineSpacing);
+            line1.setAttribute("y2", y + crossLineSpacing);
+            line1.setAttribute("stroke", "#4CAF50"); // Green cross lines
+            line1.setAttribute("stroke-width", "1");
+            svg.appendChild(line1);
 
-                    const line2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    line2.setAttribute("x1", x + crossLineSpacing);
-                    line2.setAttribute("y1", y);
-                    line2.setAttribute("x2", x);
-                    line2.setAttribute("y2", y + crossLineSpacing);
-                    line2.setAttribute("stroke", "#4CAF50"); // Green cross lines
-                    line2.setAttribute("stroke-width", "1");
-                    svg.appendChild(line2);
-                }
-            }
-
-            // Calculate the area (assuming it's a rectangle for simplicity: area = width * height)
-            // If this is a more complex quadrilateral, you would need a more accurate area calculation method.
-            const area = side1 * side2;  // You can adjust this for irregular quadrilaterals if needed
-
-            // Display area inside the shaded region
-            const areaText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            areaText.setAttribute("x", startX + scaledSide1 / 2);
-            areaText.setAttribute("y", startY + scaledSide2 / 2);
-            areaText.setAttribute("text-anchor", "middle");
-            areaText.setAttribute("font-size", "16");
-            areaText.setAttribute("fill", "#000000"); // Black text for visibility
-            areaText.textContent = `Area: ${area} sq units`;
-            svg.appendChild(areaText);
-
-            if (!isPreview) {
-                // Add dimensions
-                const dimensions = [
-                    {
-                        text: feetAndInchesToString(
-                            document.getElementById('side1_feet').value || 0,
-                            document.getElementById('side1_inches').value || 0
-                        ), x: startX + scaledSide1 / 2, y: startY - 10, anchor: "middle"
-                    },
-                    {
-                        text: feetAndInchesToString(
-                            document.getElementById('side2_feet').value || 0,
-                            document.getElementById('side2_inches').value || 0
-                        ), x: startX + scaledSide1 + 20, y: startY + scaledSide2 / 2, anchor: "start"
-                    },
-                    {
-                        text: feetAndInchesToString(
-                            document.getElementById('side3_feet').value || 0,
-                            document.getElementById('side3_inches').value || 0
-                        ), x: startX + scaledSide1 / 2, y: startY + scaledSide2 + 20, anchor: "middle"
-                    },
-                    {
-                        text: feetAndInchesToString(
-                            document.getElementById('side4_feet').value || 0,
-                            document.getElementById('side4_inches').value || 0
-                        ), x: startX - 20, y: startY + scaledSide2 / 2, anchor: "end"
-                    }
-                ];
-
-                dimensions.forEach(dim => {
-                    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                    text.setAttribute("x", dim.x);
-                    text.setAttribute("y", dim.y);
-                    text.setAttribute("text-anchor", dim.anchor);
-                    text.textContent = dim.text;
-                    svg.appendChild(text);
-                });
-            }
+            const line2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line2.setAttribute("x1", x + crossLineSpacing);
+            line2.setAttribute("y1", y);
+            line2.setAttribute("x2", x);
+            line2.setAttribute("y2", y + crossLineSpacing);
+            line2.setAttribute("stroke", "#4CAF50"); // Green cross lines
+            line2.setAttribute("stroke-width", "1");
+            svg.appendChild(line2);
         }
+    }
+
+    // --- Modified Area Calculation for Visualization ---
+    const averageLength = (side1 + side3) / 2;
+    const averageWidth = (side2 + side4) / 2;
+    const area = averageLength * averageWidth;
+    // --- End of Modified Area Calculation ---
+
+    // Display area inside the shaded region
+    const areaText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    areaText.setAttribute("x", startX + scaledSide1 / 2);
+    areaText.setAttribute("y", startY + scaledSide2 / 2);
+    areaText.setAttribute("text-anchor", "middle");
+    areaText.setAttribute("font-size", "16");
+    areaText.setAttribute("fill", "#000000"); // Black text for visibility
+    areaText.textContent = `Area: ${area.toFixed(2)} sq ft`; // Updated to use sq ft and accurate area
+    svg.appendChild(areaText);
+
+    if (!isPreview) {
+        // Add dimensions
+        const dimensions = [
+            {
+                text: feetAndInchesToString(
+                    document.getElementById('side1_feet').value || 0,
+                    document.getElementById('side1_inches').value || 0
+                ), x: startX + scaledSide1 / 2, y: startY - 10, anchor: "middle"
+            },
+            {
+                text: feetAndInchesToString(
+                    document.getElementById('side2_feet').value || 0,
+                    document.getElementById('side2_inches').value || 0
+                ), x: startX + scaledSide1 + 20, y: startY + scaledSide2 / 2, anchor: "start"
+            },
+            {
+                text: feetAndInchesToString(
+                    document.getElementById('side3_feet').value || 0,
+                    document.getElementById('side3_inches').value || 0
+                ), x: startX + scaledSide1 / 2, y: startY + scaledSide2 + 20, anchor: "middle"
+            },
+            {
+                text: feetAndInchesToString(
+                    document.getElementById('side4_feet').value || 0,
+                    document.getElementById('side4_inches').value || 0
+                ), x: startX - 20, y: startY + scaledSide2 / 2, anchor: "end"
+            }
+        ];
+
+        dimensions.forEach(dim => {
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute("x", dim.x);
+            text.setAttribute("y", dim.y);
+            text.setAttribute("text-anchor", dim.anchor);
+            text.textContent = dim.text;
+            svg.appendChild(text);
+        });
+    }
+}
 
 
 
