@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Plot Area Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .input-section {
+            padding-right: 20px;
+        }
+
+        .visualization-section {
+            border-left: 1px solid #ddd;
+            padding-left: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .unit-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="number"] {
+            width: 100px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+
+        .dimension-group {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .dimension-group.active {
+            border-color: #4CAF50;
+            background-color: #f9fff9;
+        }
+
+        .dimension-label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .side-indicator {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            color: #666;
+        }
+
+        .highlight-side {
+            stroke: #4CAF50 !important;
+            stroke-width: 4px !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Interactive Plot Area Calculator</h1>
+
+        <div class="layout">
+            <div class="input-section">
+                <div class="dimension-group" id="side1-group" onmouseover="highlightSide(0)"
+                    onmouseout="unhighlightSides()">
+                    <div class="dimension-label">Side 1 (Top)</div>
+                    <div class="side-indicator">↔️</div>
+                    <div class="input-group">
+                        <div class="unit-group">
+                            <input type="number" id="side1_feet" min="0" placeholder="Feet"
+                                oninput="updateVisualization()">
+                            <label>ft</label>
+                        </div>
+                        <div class="unit-group">
+                            <input type="number" id="side1_inches" min="0" max="11" placeholder="Inches"
+                                oninput="updateVisualization()">
+                            <label>in</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dimension-group" id="side2-group" onmouseover="highlightSide(1)"
+                    onmouseout="unhighlightSides()">
+                    <div class="dimension-label">Side 2 (Right)</div>
+                    <div class="side-indicator">↕️</div>
+                    <div class="input-group">
+                        <div class="unit-group">
+                            <input type="number" id="side2_feet" min="0" placeholder="Feet"
+                                oninput="updateVisualization()">
+                            <label>ft</label>
+                        </div>
+                        <div class="unit-group">
+                            <input type="number" id="side2_inches" min="0" max="11" placeholder="Inches"
+                                oninput="updateVisualization()">
+                            <label>in</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dimension-group" id="side3-group" onmouseover="highlightSide(2)"
+                    onmouseout="unhighlightSides()">
+                    <div class="dimension-label">Side 3 (Bottom)</div>
+                    <div class="side-indicator">↔️</div>
+                    <div class="input-group">
+                        <div class="unit-group">
+                            <input type="number" id="side3_feet" min="0" placeholder="Feet"
+                                oninput="updateVisualization()">
+                            <label>ft</label>
+                        </div>
+                        <div class="unit-group">
+                            <input type="number" id="side3_inches" min="0" max="11" placeholder="Inches"
+                                oninput="updateVisualization()">
+                            <label>in</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dimension-group" id="side4-group" onmouseover="highlightSide(3)"
+                    onmouseout="unhighlightSides()">
+                    <div class="dimension-label">Side 4 (Left)</div>
+                    <div class="side-indicator">↕️</div>
+                    <div class="input-group">
+                        <div class="unit-group">
+                            <input type="number" id="side4_feet" min="0" placeholder="Feet"
+                                oninput="updateVisualization()">
+                            <label>ft</label>
+                        </div>
+                        <div class="unit-group">
+                            <input type="number" id="side4_inches" min="0" max="11" placeholder="Inches"
+                                oninput="updateVisualization()">
+                            <label>in</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="calculateArea()">Calculate Area</button>
+                <div id="result"></div>
+            </div>
+
+            <div class="visualization-section">
+                <h3>Live Plot Visualization</h3>
+                <svg id="plotVisualization" width="500" height="400" style="background-color: #fff;">
+                    <!-- Plot will be drawn here -->
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function feetAndInchesToString(feet, inches) {
+            feet = feet || 0;
+            inches = inches || 0;
+            if (inches === 0) {
+                return `${feet}'`;
+            }
+            return `${feet}'${inches}"`;
+        }
+
+        function feetAndInchesToFeet(feet, inches) {
+            return feet + (inches / 12);
+        }
+
+        function getSideLength(sideNumber) {
+            const feet = parseFloat(document.getElementById(`side${sideNumber}_feet`).value) || 0;
+            const inches = parseFloat(document.getElementById(`side${sideNumber}_inches`).value) || 0;
+            return feetAndInchesToFeet(feet, inches);
+        }
+
+        function highlightSide(sideIndex) {
+            const sides = document.querySelectorAll('.plot-side');
+            sides.forEach(side => side.classList.remove('highlight-side'));
+            if (sides[sideIndex]) {
+                sides[sideIndex].classList.add('highlight-side');
+            }
+        }
+
+        function unhighlightSides() {
+            const sides = document.querySelectorAll('.plot-side');
+            sides.forEach(side => side.classList.remove('highlight-side'));
+        }
+
+        function updateVisualization() {
+            const side1 = getSideLength(1);
+            const side2 = getSideLength(2);
+            const side3 = getSideLength(3);
+            const side4 = getSideLength(4);
+
+            if (side1 || side2 || side3 || side4) {
+                drawPlot(side1, side2, side3, side4, true);
+            }
+        }
+
+        function calculateArea() {
+            const side1 = getSideLength(1);
+            const side2 = getSideLength(2);
+            const side3 = getSideLength(3);
+            const side4 = getSideLength(4);
+
+            if (!side1 || !side2 || !side3 || !side4) {
+                alert('Please enter all dimensions');
+                return;
+            }
+
+            // Using the average of parallel sides for approximate area calculation
+            const averageLength = (side1 + side3) / 2;
+            const averageWidth = (side2 + side4) / 2;
+            const area = averageLength * averageWidth;
+
+            document.getElementById('result').innerHTML = `
+                Approximate Plot Area: ${area.toFixed(2)} square feet<br>
+                Perimeter: ${(side1 + side2 + side3 + side4).toFixed(2)} feet
+            `;
+
+            drawPlot(side1, side2, side3, side4, false);
+        }
+
+        function drawPlot(side1, side2, side3, side4, isPreview) {
+            const svg = document.getElementById('plotVisualization');
+            const maxDimension = Math.max(side1, side2, side3, side4);
+            const scale = 300 / maxDimension;
+
+            svg.innerHTML = '';
+
+            // Calculate centered position
+            const startX = 100;
+            const startY = 50;
+
+            // Draw plot as a quadrilateral
+            const scaledSide1 = side1 * scale;
+            const scaledSide2 = side2 * scale;
+            const scaledSide3 = side3 * scale;
+            const scaledSide4 = side4 * scale;
+
+            // Create path for the quadrilateral
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("d", `
+                M ${startX},${startY} 
+                h ${scaledSide1} 
+                v ${scaledSide2} 
+                h ${-scaledSide3} 
+                Z
+            `);
+            path.setAttribute("fill", "#66cc66"); // Green shading
+            path.setAttribute("stroke", "#2196F3");
+            path.setAttribute("stroke-width", "2");
+            svg.appendChild(path);
+
+            // Draw individual sides with class for highlighting
+            const sides = [
+                {x1: startX, y1: startY, x2: startX + scaledSide1, y2: startY}, // Top
+                {x1: startX + scaledSide1, y1: startY, x2: startX + scaledSide1, y2: startY + scaledSide2}, // Right
+                {x1: startX + scaledSide1, y1: startY + scaledSide2, x2: startX, y2: startY + scaledSide2}, // Bottom
+                {x1: startX, y1: startY + scaledSide2, x2: startX, y2: startY} // Left
+            ];
+
+            sides.forEach((side, index) => {
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", side.x1);
+                line.setAttribute("y1", side.y1);
+                line.setAttribute("x2", side.x2);
+                line.setAttribute("y2", side.y2);
+                line.setAttribute("stroke", "#2196F3");
+                line.setAttribute("stroke-width", "2");
+                line.setAttribute("class", "plot-side");
+                svg.appendChild(line);
+            });
+
+            // Add crosshatching (small diagonal cross lines)
+            const crossLineSpacing = 10; // The distance between each line for crosshatching
+            for (let x = startX; x < startX + scaledSide1; x += crossLineSpacing) {
+                for (let y = startY; y < startY + scaledSide2; y += crossLineSpacing) {
+                    const line1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line1.setAttribute("x1", x);
+                    line1.setAttribute("y1", y);
+                    line1.setAttribute("x2", x + crossLineSpacing);
+                    line1.setAttribute("y2", y + crossLineSpacing);
+                    line1.setAttribute("stroke", "#4CAF50"); // Green cross lines
+                    line1.setAttribute("stroke-width", "1");
+                    svg.appendChild(line1);
+
+                    const line2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line2.setAttribute("x1", x + crossLineSpacing);
+                    line2.setAttribute("y1", y);
+                    line2.setAttribute("x2", x);
+                    line2.setAttribute("y2", y + crossLineSpacing);
+                    line2.setAttribute("stroke", "#4CAF50"); // Green cross lines
+                    line2.setAttribute("stroke-width", "1");
+                    svg.appendChild(line2);
+                }
+            }
+
+            // Calculate the area (assuming it's a rectangle for simplicity: area = width * height)
+            // If this is a more complex quadrilateral, you would need a more accurate area calculation method.
+            const area = side1 * side2;  // You can adjust this for irregular quadrilaterals if needed
+
+            // Display area inside the shaded region
+            const areaText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            areaText.setAttribute("x", startX + scaledSide1 / 2);
+            areaText.setAttribute("y", startY + scaledSide2 / 2);
+            areaText.setAttribute("text-anchor", "middle");
+            areaText.setAttribute("font-size", "16");
+            areaText.setAttribute("fill", "#000000"); // Black text for visibility
+            areaText.textContent = `Area: ${area} sq units`;
+            svg.appendChild(areaText);
+
+            if (!isPreview) {
+                // Add dimensions
+                const dimensions = [
+                    {
+                        text: feetAndInchesToString(
+                            document.getElementById('side1_feet').value || 0,
+                            document.getElementById('side1_inches').value || 0
+                        ), x: startX + scaledSide1 / 2, y: startY - 10, anchor: "middle"
+                    },
+                    {
+                        text: feetAndInchesToString(
+                            document.getElementById('side2_feet').value || 0,
+                            document.getElementById('side2_inches').value || 0
+                        ), x: startX + scaledSide1 + 20, y: startY + scaledSide2 / 2, anchor: "start"
+                    },
+                    {
+                        text: feetAndInchesToString(
+                            document.getElementById('side3_feet').value || 0,
+                            document.getElementById('side3_inches').value || 0
+                        ), x: startX + scaledSide1 / 2, y: startY + scaledSide2 + 20, anchor: "middle"
+                    },
+                    {
+                        text: feetAndInchesToString(
+                            document.getElementById('side4_feet').value || 0,
+                            document.getElementById('side4_inches').value || 0
+                        ), x: startX - 20, y: startY + scaledSide2 / 2, anchor: "end"
+                    }
+                ];
+
+                dimensions.forEach(dim => {
+                    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    text.setAttribute("x", dim.x);
+                    text.setAttribute("y", dim.y);
+                    text.setAttribute("text-anchor", dim.anchor);
+                    text.textContent = dim.text;
+                    svg.appendChild(text);
+                });
+            }
+        }
+
+
+
+        // Initialize with empty plot
+        drawPlot(0, 0, 0, 0, true);
+    </script>
+</body>
+
+</html>
